@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    /* hormati safe-area iOS untuk PWA standalone */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-cream text-ink font-body antialiased;
+    margin: 0;
+    min-height: 100dvh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-light text-burgundy-deep;
+  }
+}
+
+@layer components {
+  /* tombol utama */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-2xl bg-burgundy-deep px-5 py-3
+      font-body font-medium text-cream transition
+      active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-2xl border border-burgundy-mid/30
+      px-5 py-3 font-body font-medium text-burgundy-mid transition active:scale-[0.98];
+  }
+
+  .field-label {
+    @apply mb-1 block text-sm font-medium text-ink/70;
+  }
+
+  .field-input {
+    @apply w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-ink
+      outline-none transition placeholder:text-ink/30
+      focus:border-burgundy-mid focus:ring-2 focus:ring-burgundy-mid/20;
+  }
+
+  .card {
+    @apply rounded-3xl bg-white p-5 shadow-sm ring-1 ring-ink/5;
+  }
+}

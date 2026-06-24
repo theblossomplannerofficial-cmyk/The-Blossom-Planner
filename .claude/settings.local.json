@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(sips -g pixelWidth -g pixelHeight public/logo-full.png)",
+      "Bash(curl -s -o /dev/null -w \"localhost:5174 status=%{http_code}\\\\n\" http://localhost:5174/)"
+    ]
+  }
+}
