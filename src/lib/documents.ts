@@ -17,21 +17,22 @@ export interface SeedDoc {
   owner: string
 }
 
-// Dokumen umum untuk nikah di KUA (Indonesia).
+// Dokumen umum untuk nikah di KUA (Indonesia) — sesuai daftar sub-prompt.
 export const DEFAULT_DOCUMENTS: SeedDoc[] = [
-  { name: 'Surat Pengantar Nikah dari RT/RW', owner: 'bersama' },
-  { name: 'Surat Keterangan untuk Menikah (N1)', owner: 'bersama' },
-  { name: 'Surat Keterangan Asal-Usul (N2)', owner: 'bersama' },
-  { name: 'Surat Persetujuan Mempelai (N3)', owner: 'bersama' },
-  { name: 'Surat Keterangan tentang Orang Tua (N4)', owner: 'bersama' },
-  { name: 'Surat Izin Orang Tua (N5) — jika usia < 21', owner: 'bersama' },
-  { name: 'Fotokopi KTP Mempelai Pria', owner: 'groom' },
-  { name: 'Fotokopi KTP Mempelai Wanita', owner: 'bride' },
-  { name: 'Fotokopi Kartu Keluarga (KK)', owner: 'bersama' },
-  { name: 'Fotokopi Akta Kelahiran', owner: 'bersama' },
-  { name: 'Pas Foto 2x3 (background biru)', owner: 'bersama' },
-  { name: 'Pas Foto 3x4 (background biru)', owner: 'bersama' },
+  { name: 'Surat Pengantar Nikah dari Desa/Kelurahan (N1)', owner: 'bersama' },
+  { name: 'Surat Keterangan Untuk Nikah', owner: 'bersama' },
+  { name: 'Surat Keterangan Asal Usul', owner: 'bersama' },
+  { name: 'Surat Persetujuan Mempelai', owner: 'bersama' },
+  { name: 'Surat Keterangan Tentang Orang Tua', owner: 'orangtua' },
+  { name: 'Surat Izin Orang Tua (jika usia < 21 th)', owner: 'orangtua' },
+  { name: 'Fotokopi KTP Calon Pengantin Wanita', owner: 'bride' },
+  { name: 'Fotokopi KTP Calon Pengantin Pria', owner: 'groom' },
   { name: 'Fotokopi KTP Saksi', owner: 'saksi' },
-  { name: 'Surat Rekomendasi Nikah (jika beda wilayah)', owner: 'bersama' },
-  { name: 'Akta Cerai / Surat Kematian (jika pernah menikah)', owner: 'bersama' },
+  { name: 'Fotokopi KTP Orang Tua', owner: 'orangtua' },
+  { name: 'Fotokopi Kartu Keluarga', owner: 'bersama' },
+  { name: 'Fotokopi Akta Lahir', owner: 'bersama' },
+  { name: 'Surat Keterangan Sehat / Imunisasi Calon Istri', owner: 'bride' },
+  { name: 'Surat Pernyataan Belum Pernah Kawin dari Desa/Kelurahan', owner: 'bersama' },
+  { name: 'Pas Foto Background Biru 2x3 (5 lembar)', owner: 'bersama' },
+  { name: 'Pas Foto Background Biru 3x5 (5 lembar)', owner: 'bersama' },
 ]

@@ -1,16 +1,14 @@
 import { supabase } from './supabase'
+import { maybeCompressImage } from './image'
 
 // Bucket privat. Konvensi path: {user_id}/{wedding_id}/{subdir}/{file}
 // RLS storage hanya mengizinkan folder milik user (folder pertama = auth.uid()).
 const BUCKET = 'wedding-photos'
 
-function randomName(file: File): string {
-  const ext = file.name.includes('.') ? file.name.split('.').pop() : 'bin'
-  const rand =
-    typeof crypto !== 'undefined' && 'randomUUID' in crypto
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.random().toString(36).slice(2)}`
-  return `${rand}.${ext}`
+function randomId(): string {
+  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
 export async function uploadFile(
@@ -19,11 +17,14 @@ export async function uploadFile(
   weddingId: string,
   subdir = '',
 ): Promise<{ path: string | null; error: string | null }> {
+  // Kompres/resize gambar dulu (PDF/non-gambar dilewati).
+  const prepared = await maybeCompressImage(file)
   const folder = subdir ? `${subdir}/` : ''
-  const path = `${userId}/${weddingId}/${folder}${randomName(file)}`
-  const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+  const path = `${userId}/${weddingId}/${folder}${randomId()}.${prepared.ext}`
+  const { error } = await supabase.storage.from(BUCKET).upload(path, prepared.data, {
     cacheControl: '3600',
     upsert: false,
+    contentType: prepared.contentType,
   })
   if (error) return { path: null, error: error.message }
   return { path, error: null }

@@ -4,8 +4,14 @@ import PageHeader from '../components/PageHeader'
 import Modal from '../components/Modal'
 import ReminderForm, { REMINDER_TYPES } from '../components/ReminderForm'
 import { useReminders } from '../hooks/useReminders'
-import { buildIcs, downloadIcs } from '../lib/ics'
+import { useVendorItems } from '../hooks/useVendorItems'
+import { buildIcs, downloadIcs, type IcsEvent } from '../lib/ics'
 import type { Reminder } from '../types/db'
+
+/** Buat Date pada jam 09:00 lokal dari tanggal 'YYYY-MM-DD'. */
+function dateAt9(d: string): Date {
+  return new Date(`${d}T09:00:00`)
+}
 
 function typeLabel(v: string | null): string {
   return REMINDER_TYPES.find((t) => t.value === v)?.label ?? 'Lainnya'
@@ -25,6 +31,7 @@ function formatWhen(iso: string | null): string {
 
 export default function RemindersPage() {
   const { reminders, createReminder, updateReminder, removeReminder } = useReminders()
+  const { items: vendorItems } = useVendorItems()
   const [modal, setModal] = useState<{ reminder: Reminder | null } | null>(null)
   const [notifPerm, setNotifPerm] = useState<NotificationPermission>(
     typeof Notification !== 'undefined' ? Notification.permission : 'denied',
@@ -59,20 +66,45 @@ export default function RemindersPage() {
   }
 
   function exportIcs() {
-    const withTime = reminders.filter((r) => r.remind_at)
-    if (withTime.length === 0) {
-      alert('Belum ada pengingat berwaktu untuk diekspor.')
+    const events: IcsEvent[] = []
+
+    // 1) Reminder berwaktu.
+    for (const r of reminders) {
+      if (!r.remind_at) continue
+      events.push({
+        uid: r.id,
+        title: `🔔 ${r.title}`,
+        start: new Date(r.remind_at),
+        description: r.notes ?? undefined,
+      })
+    }
+
+    // 2) Deadline & jatuh tempo pembayaran dari vendor_items.
+    for (const it of vendorItems) {
+      const label = it.title || it.vendor_name || 'Item vendor'
+      if (it.deadline) {
+        events.push({
+          uid: `${it.id}-deadline`,
+          title: `⏰ Deadline: ${label}`,
+          start: dateAt9(it.deadline),
+          durationMinutes: 60,
+        })
+      }
+      if (it.due_date) {
+        events.push({
+          uid: `${it.id}-due`,
+          title: `💳 Jatuh tempo bayar: ${label}`,
+          start: dateAt9(it.due_date),
+          durationMinutes: 60,
+        })
+      }
+    }
+
+    if (events.length === 0) {
+      alert('Belum ada pengingat / deadline untuk diekspor.')
       return
     }
-    const ics = buildIcs(
-      withTime.map((r) => ({
-        uid: r.id,
-        title: r.title,
-        start: new Date(r.remind_at!),
-        description: r.notes ?? undefined,
-      })),
-    )
-    downloadIcs('blossom-reminders.ics', ics)
+    downloadIcs('blossom-reminders.ics', buildIcs(events))
   }
 
   return (

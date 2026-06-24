@@ -22,6 +22,7 @@ export const CATEGORIES: CategoryConfig[] = [
   { key: 'catering', label: 'Catering', icon: '🍽️', details: [
     { key: 'menu', label: 'Menu', type: 'textarea' },
     { key: 'porsi_disediakan', label: 'Porsi disediakan', type: 'number' },
+    { key: 'porsi_terpakai', label: 'Porsi terpakai', type: 'number' },
     { key: 'food_testing', label: 'Jadwal food testing', type: 'text' },
   ] },
   { key: 'dekorasi', label: 'Dekorasi', icon: '🌸', details: [

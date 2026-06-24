@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
 import PageHeader from '../components/PageHeader'
 import Modal from '../components/Modal'
+import BudgetAllocator from '../components/BudgetAllocator'
 import { useVendorItems } from '../hooks/useVendorItems'
+import { useGuests } from '../hooks/useGuests'
 import { useWedding } from '../context/WeddingContext'
 import { CATEGORIES, categoryIcon, categoryLabel } from '../lib/categories'
 import { formatIDR } from '../lib/format'
-import { allocateBudget } from '../lib/allocator'
 
 interface CatAgg {
   key: string
@@ -17,9 +18,9 @@ interface CatAgg {
 
 export default function BudgetPage() {
   const { items, loading, createItem } = useVendorItems()
+  const { guests } = useGuests()
   const { wedding } = useWedding()
   const [allocOpen, setAllocOpen] = useState(false)
-  const [applying, setApplying] = useState(false)
 
   const { cats, totals } = useMemo(() => {
     const map = new Map<string, CatAgg>()
@@ -55,14 +56,10 @@ export default function BudgetPage() {
   const payPct = totals.actual > 0 ? Math.min(100, Math.round((totals.paid / totals.actual) * 100)) : 0
 
   // Auto Budget Allocator (rule-based, client-side).
-  const allocations = useMemo(() => allocateBudget(totalBudget), [totalBudget])
   const existingCats = useMemo(() => new Set(items.map((i) => i.category)), [items])
 
-  async function applyAllocation() {
-    setApplying(true)
-    // Buat item estimasi untuk kategori yang belum ada (tidak menimpa yang sudah ada).
-    for (const a of allocations) {
-      if (existingCats.has(a.category) || a.amount <= 0) continue
+  async function applyAllocation(list: { category: string; amount: number }[]) {
+    for (const a of list) {
       await createItem({
         category: a.category,
         event_id: null,
@@ -83,7 +80,6 @@ export default function BudgetPage() {
         notes: 'Dibuat otomatis oleh Auto Budget Allocator',
       })
     }
-    setApplying(false)
     setAllocOpen(false)
   }
 
@@ -205,34 +201,12 @@ export default function BudgetPage() {
 
       {/* Auto Budget Allocator */}
       <Modal open={allocOpen} title="✨ Auto Budget Allocator" onClose={() => setAllocOpen(false)}>
-        <div className="space-y-3 pb-2">
-          <p className="text-sm text-ink/60">
-            Saran pembagian dari total anggaran <b>{formatIDR(totalBudget)}</b>. Item dibuat
-            otomatis untuk kategori yang <b>belum ada</b> (yang sudah ada tidak diubah).
-          </p>
-          <div className="space-y-1.5">
-            {allocations.map((a) => (
-              <div
-                key={a.category}
-                className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm ${
-                  existingCats.has(a.category) ? 'bg-ink/5 text-ink/40' : 'bg-white ring-1 ring-ink/5'
-                }`}
-              >
-                <span>
-                  {categoryIcon(a.category)} {categoryLabel(a.category)}
-                  <span className="ml-1 text-xs text-ink/40">{a.pct}%</span>
-                  {existingCats.has(a.category) && (
-                    <span className="ml-1 text-xs text-ink/40">(sudah ada — dilewati)</span>
-                  )}
-                </span>
-                <b className="text-ink">{formatIDR(a.amount)}</b>
-              </div>
-            ))}
-          </div>
-          <button onClick={applyAllocation} disabled={applying} className="btn-primary w-full">
-            {applying ? 'Menerapkan…' : 'Terapkan ke Estimasi'}
-          </button>
-        </div>
+        <BudgetAllocator
+          total={totalBudget}
+          defaultGuests={guests.length}
+          existingCats={existingCats}
+          onApply={applyAllocation}
+        />
       </Modal>
     </>
   )
