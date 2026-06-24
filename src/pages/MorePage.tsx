@@ -10,6 +10,7 @@ interface MenuLink {
 }
 
 const MENU: MenuLink[] = [
+  { to: '/profil', icon: '💑', label: 'Profil Pernikahan' },
   { to: '/checklist', icon: '✅', label: 'Checklist & Timeline' },
   { to: '/rundown', icon: '🗒️', label: 'Rundown Acara' },
   { to: '/dokumen', icon: '📄', label: 'Dokumen KUA' },

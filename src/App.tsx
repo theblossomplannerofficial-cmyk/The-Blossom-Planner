@@ -18,6 +18,7 @@ import DocumentsPage from './pages/DocumentsPage'
 import SeserahanPage from './pages/SeserahanPage'
 import HoneymoonPage from './pages/HoneymoonPage'
 import RemindersPage from './pages/RemindersPage'
+import ProfilPage from './pages/ProfilPage'
 
 export default function App() {
   const { accessState } = useAuth()
@@ -51,6 +52,7 @@ export default function App() {
             <Route path="seserahan" element={<SeserahanPage />} />
             <Route path="honeymoon" element={<HoneymoonPage />} />
             <Route path="reminder" element={<RemindersPage />} />
+            <Route path="profil" element={<ProfilPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

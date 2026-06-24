@@ -42,6 +42,55 @@ export type WeddingInput = Pick<
   | 'total_budget'
 >
 
+export interface CoupleProfile {
+  id: string
+  wedding_id: string
+  user_id: string
+  role: string // 'groom' | 'bride'
+  full_name: string | null
+  nickname: string | null
+  birth_place: string | null
+  birth_date: string | null
+  religion: string | null
+  education: string | null
+  occupation: string | null
+  address: string | null
+  phone: string | null
+  email: string | null
+  photo_url: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type CoupleProfileInput = Pick<
+  CoupleProfile,
+  | 'full_name'
+  | 'nickname'
+  | 'birth_place'
+  | 'birth_date'
+  | 'religion'
+  | 'education'
+  | 'occupation'
+  | 'address'
+  | 'phone'
+  | 'email'
+>
+
+export interface Parent {
+  id: string
+  wedding_id: string
+  user_id: string
+  side: string // 'groom' | 'bride'
+  father_name: string | null
+  mother_name: string | null
+  address: string | null
+  contact: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type ParentInput = Pick<Parent, 'father_name' | 'mother_name' | 'address' | 'contact'>
+
 export interface WeddingEvent {
   id: string
   wedding_id: string
